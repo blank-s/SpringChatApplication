@@ -75,21 +75,19 @@ function onMessageReceived(payload) {
     if(message.type === 'JOINED') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' joined!';
-    } else if (message.type === 'LEFT') {
+    } else if (message.type === 'LEAVE') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' left!';
     } else {
-        //messageElement.classList.add('chat-message');
+        messageElement.classList.add('chat-message');
 
-        var isSelf = (message.sender === username); // Check if the message sender is the current user
-
-        if (isSelf) {
-            logger.info('hell');
-            messageElement.classList.add('right-message');
-        }
-        else{
-            messageElement.classList.add('left-message');
-        }
+//        var isSelf = (message.sender === username);
+//        if (isSelf) {
+//            messageElement.classList.add('right-message');
+//        }
+//        else{
+//            messageElement.classList.add('left-message');
+//        }
 
         var avatarElement = document.createElement('i');
         var avatarText = document.createTextNode(message.sender[0]);
