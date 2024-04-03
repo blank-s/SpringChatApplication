@@ -2,6 +2,7 @@ package com.example.chat.Controller;
 
 import com.example.chat.Payloads.ChatMessage;
 import com.example.chat.Services.ChatService;
+import com.example.chat.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -16,6 +17,9 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    @Autowired
+    private UserService userService;
+
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage ){
@@ -26,7 +30,10 @@ public class ChatController {
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+
+        userService.checkUser(chatMessage);
         headerAccessor.getSessionAttributes().put("username",chatMessage.getSender());
+
         return chatMessage;
     }
 }
