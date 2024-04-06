@@ -4,6 +4,7 @@ import com.example.chat.Payloads.ChatMessage;
 import com.example.chat.Payloads.UserLoginInfo;
 import com.example.chat.Services.ChatService;
 import com.example.chat.Services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -23,7 +24,7 @@ public class ChatController {
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage ){
+    public ChatMessage sendMessage(@Payload ChatMessage chatMessage ) throws JsonProcessingException {
         chatService.saveMessage(chatMessage);
         return chatMessage;
     }
