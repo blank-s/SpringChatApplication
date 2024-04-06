@@ -10,6 +10,7 @@ var connectingElement = document.querySelector('.connecting');
 
 var stompClient = null;
 var username = null;
+var password = null;
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -18,29 +19,57 @@ var colors = [
 
 function connect(event) {
     username = document.querySelector('#username').value.trim();
+    password = document.querySelector('#password').value.trim();
 
-    if(username) {
-        usernamePage.classList.add('hidden');
-        chatPage.classList.remove('hidden');
+    const userLoginDetails = {
+            userName: username,
+            password: password
+        };
+        fetch("/check-login-credential/user",{
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(userLoginDetails)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Wrong login credentials");
+            }
+             usernamePage.classList.add('hidden');
+             chatPage.classList.remove('hidden');
 
-        var socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
+             var socket = new SockJS('/ws');
+             stompClient = Stomp.over(socket);
+             stompClient.connect({}, onConnected, onError);
 
-        stompClient.connect({}, onConnected, onError);
-    }
+        })
+        .catch(error => {
+            console.error("Error we:", error);
+
+            alert("Invalid username or password in Js. Please try again.");
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("username").focus();
+        });
+
+
     event.preventDefault();
 }
 
 
 function onConnected() {
-    // Subscribe to the Public Topic
+
+
     stompClient.subscribe('/topic/public', onMessageReceived);
+
 
     // Tell your username to the server
     stompClient.send("/app/chat.addUser",
         {},
         JSON.stringify({sender: username, type: 'JOINED'})
     )
+
+
+
 
     connectingElement.classList.add('hidden');
 }
@@ -66,28 +95,28 @@ function sendMessage(event) {
     event.preventDefault();
 }
 
-
+function sleep(milliseconds) {
+    const start = Date.now();
+    while (Date.now() - start < milliseconds) {
+        // Busy loop
+    }
+}
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
 
     var messageElement = document.createElement('li');
 
     if(message.type === 'JOINED') {
+
+
         messageElement.classList.add('event-message');
         message.content = message.sender + ' joined!';
+                sleep(5000);
     } else if (message.type === 'LEAVE') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' left!';
     } else {
         messageElement.classList.add('chat-message');
-
-//        var isSelf = (message.sender === username);
-//        if (isSelf) {
-//            messageElement.classList.add('right-message');
-//        }
-//        else{
-//            messageElement.classList.add('left-message');
-//        }
 
         var avatarElement = document.createElement('i');
         var avatarText = document.createTextNode(message.sender[0]);
@@ -110,6 +139,8 @@ function onMessageReceived(payload) {
 
     messageArea.appendChild(messageElement);
     messageArea.scrollTop = messageArea.scrollHeight;
+        console.log("last joined");
+
 }
 
 

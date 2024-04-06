@@ -15,9 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ChatMessage {
 
     private String idUserName;
-
     private String content;
     private String sender;
-
     private MessageType type;
 }
