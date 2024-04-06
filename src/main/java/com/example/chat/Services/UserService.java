@@ -42,7 +42,7 @@ public class UserService {
         }
         else {
             String decryptedPassword = encryptionConfig.decrypt(checkUserExists.getPassword());
-            if(!checkUserExists.getPassword().equals(decryptedPassword)) {
+            if(!userLoginInfo.getPassword().equals(decryptedPassword)) {
                 log.info("Wrong Password /Enter Again");
                 throw new RuntimeException("Wrong Password /Enter Again");
             }
